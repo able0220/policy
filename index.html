@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>(주)에이블 국정운영 시뮬레이션</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&display=swap');
+
+        body {
+            font-family: 'Nanum Gothic', sans-serif;
+            background-color: #e3effb; 
+            margin: 0;
+            padding: 20px;
+            color: #2c3e50;
+        }
+
+        /* 수정된 헤더 영역: 컨테이너 너비와 일치시킴 */
+        .company-header {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            max-width: 1300px; /* 아래 .container와 동일한 너비 */
+            margin: 0 auto 10px auto; /* 중앙 정렬 및 하단 간격 */
+            gap: 10px;
+            padding-right: 10px; /* 오른쪽 끝에서 약간의 여백 */
+        }
+        
+        .company-text {
+            font-size: 1.05em;
+            color: #1a3a5a; 
+            font-weight: 800; 
+            letter-spacing: -0.5px;
+        }
+        .company-logo {
+            height: 32px;
+            width: auto;
+        }
+
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 40px;
+            border-radius: 25px;
+            box-shadow: 0 15px 35px rgba(52, 152, 219, 0.2); 
+            border: 4px solid #3498db; 
+            position: relative;
+        }
+
+        .title-image-container {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .title-image {
+            max-width: 1150px;
+            width: 100%;
+            height: auto;
+            border-radius: 15px;
+        }
+
+        .status-bar {
+            background-color: #d6eaf8; 
+            padding: 22px;
+            border-radius: 15px;
+            text-align: center;
+            font-size: 1.4em;
+            font-weight: bold;
+            color: #1b4f72;
+            margin-bottom: 35px;
+            border: 2px solid #3498db;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            margin-bottom: 40px;
+            border-radius: 15px;
+            border: 2px solid #aed6f1;
+        }
+        
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            background-color: white; 
+            table-layout: fixed; 
+        }
+        
+        th, td { 
+            padding: 14px 8px; 
+            border: 1px solid #d4e6f1; 
+            text-align: center; 
+            word-break: break-all;
+            height: 50px; 
+        }
+        
+        th { 
+            background-color: #2e86de; 
+            color: white; 
+            font-weight: 700; 
+            font-size: 1.1em;
+        }
+
+        #input-table th:first-child, #input-table td:first-child {
+            width: 220px; 
+        }
+
+        #result-table th {
+            font-size: 1.2em;
+            padding: 18px 8px;
+        }
+        #result-table td {
+            font-size: 1.3em;
+            font-weight: 700;
+            padding: 18px 8px;
+        }
+        #result-table td:first-child {
+            width: 180px; 
+            font-size: 1.15em;
+        }
+
+        .policy-cell {
+            text-align: left !important;        
+            padding-left: 20px !important;      
+            font-weight: 800;        
+            font-size: 1.1em;       
+            color: #1a3a5a;          
+            letter-spacing: -0.5px;  
+            background-color: #fcfdfe;
+        }
+
+        .team-name-input {
+            background: #f0f7ff;
+            border: 2px solid #3498db;
+            border-radius: 8px;
+            padding: 8px;
+            text-align: center;
+            font-weight: bold;
+            color: #2c3e50;
+            width: 85%;
+            font-size: 1em;
+        }
+
+        .active-policy { background-color: #ebf5fb !important; }
+        .active-policy td:first-child { 
+            color: #2980b9; 
+            font-weight: 900; 
+            background-color: #d6eaf8;
+            border-left: 5px solid #3498db; 
+        }
+
+        .btn-container { display: flex; justify-content: center; gap: 10px; margin: 30px 0; flex-wrap: wrap; }
+        button {
+            padding: 18px 30px;
+            font-size: 1.05em;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .btn-next { background-color: #2980b9; color: white; }
+        .btn-next:hover { background-color: #1b4f72; transform: translateY(-3px); }
+        .btn-prev { background-color: #54a0ff; color: white; }
+        .btn-prev:hover { background-color: #2e86de; }
+        .btn-rank { background-color: #f1c40f; color: #2c3e50; } 
+        .btn-rank:hover { background-color: #f39c12; }
+        .btn-random { background-color: #ff9f43; color: white; } 
+        .btn-random:hover { background-color: #ee5253; }
+        .btn-reset { background-color: #8395a7; color: white; }
+
+        #result-section h2 { 
+            color: #2c3e50; 
+            border-left: 6px solid #2980b9; 
+            padding-left: 15px; 
+            text-align: left; 
+            margin-bottom: 20px; 
+            font-size: 1.6em;
+        }
+        .score-val { font-size: 1.1em; } 
+        .positive { color: #009432; } 
+        .negative { color: #eb4d4b; }
+        
+        .danger-cell { 
+            background-color: #ffeaea !important; 
+            color: #c0392b !important;
+            border: 3px solid #e74c3c !important;
+        }
+
+        select { 
+            padding: 8px; 
+            border-radius: 8px; 
+            border: 2px solid #3498db; 
+            background-color: #f0f7ff;
+            font-weight: bold;
+            cursor: pointer;
+            width: 90%;
+            font-size: 1em;
+        }
+
+        .empty-msg { text-align: center; padding: 45px; color: #7f8c8d; font-size: 1.2em; font-weight: bold; }
+
+        #ranking-area {
+            display: none; 
+            margin-top: 50px;
+            background-color: #fff9e6; 
+            padding: 30px;
+            border-radius: 20px;
+            border: 3px solid #f1c40f;
+        }
+        .rank-title { font-size: 1.8em; font-weight: 800; color: #d35400; text-align: center; margin-bottom: 20px; }
+        .rank-list { list-style: none; padding: 0; margin: 0; }
+        .rank-item { 
+            background: white; 
+            padding: 15px; 
+            margin-bottom: 10px; 
+            border-radius: 10px; 
+            border: 1px solid #ddd;
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            font-size: 1.3em;
+        }
+        .rank-badge {
+            background-color: #e67e22; color: white; padding: 5px 15px; border-radius: 20px; font-weight: bold; margin-right: 15px;
+        }
+        .rank-finance { color: #27ae60; font-weight: bold; }
+        
+        .eliminated-box {
+            margin-top: 30px;
+            border-top: 2px dashed #bdc3c7;
+            padding-top: 20px;
+            color: #7f8c8d;
+        }
+        .eliminated-title { font-weight: bold; color: #c0392b; margin-bottom: 10px; font-size: 1.4em; }
+        .eliminated-item { 
+            color: #7f8c8d; 
+            margin-bottom: 8px; 
+            font-size: 1.25em;  
+            font-weight: bold;  
+        }
+    </style>
+</head>
+<body>
+
+<div class="company-header">
+    <span class="company-text">찾아가는 진로체험 (주)에이블</span>
+    <img src="에이블 로고.png" alt="에이블 로고" class="company-logo" onerror="this.style.display='none'">
+</div>
+
+<div class="container">
+    <div class="title-image-container">
+        <img src="타이틀.png" alt="국정운영 시뮬레이션 타이틀" class="title-image" onerror="this.alt='🏛️ 국정운영 시뮬레이션'">
+    </div>
+    
+    <div class="status-bar" id="status-display">준비 단계 : 팀명을 입력하고 추진도를 설정하면 실시간으로 반영됩니다.</div>
+
+    <div class="table-wrapper">
+        <table id="input-table">
+            <thead>
+                <tr id="header-row">
+                    <th>정책 리스트 / 팀명</th>
+                </tr>
+            </thead>
+            <tbody id="input-tbody"></tbody>
+        </table>
+    </div>
+
+    <div class="btn-container">
+        <button class="btn-reset" onclick="resetEverything()">🔄 전부 초기화</button>
+        <button class="btn-random" onclick="fillRandomData()">🎲 랜덤 모의 테스트</button>
+        <button class="btn-prev" id="btn-prev" onclick="processPrevStep()" style="display:none;">⬅ 이전 정책 수정</button>
+        <button class="btn-next" id="btn-next" onclick="processNextStep()">▶ 다음 정책으로</button>
+        <button class="btn-rank" onclick="calculateRanking()">🏆 최종 순위 산출</button>
+    </div>
+
+    <div id="result-section">
+        <h2>📊 국정 운영 성과 (실시간 반영 중)</h2>
+        <div class="table-wrapper">
+            <table id="result-table">
+                <thead>
+                    <tr>
+                        <th>팀 이름</th>
+                        <th>대기업</th>
+                        <th>소상공인</th>
+                        <th>정규직</th>
+                        <th>비정규직</th>
+                        <th>정부 재정</th>
+                    </tr>
+                </thead>
+                <tbody id="result-tbody">
+                    <tr><td colspan="6" class="empty-msg">팀별 정책 추진도를 선택하면 실시간 결과가 나타납니다.</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="ranking-area">
+        <div class="rank-title">🏆 재집권 성공 정부 🏆</div>
+        <div id="ranking-list-container"></div>
+        
+        <div class="eliminated-box" id="eliminated-container" style="display:none;">
+            <div class="eliminated-title">⚠️ 국정 운영 위기 정부 ⚠️</div>
+            <div id="eliminated-list"></div>
+            <div style="font-size:1em; margin-top:10px; color:#c0392b;">※ 대기업, 소상공인, 정규직, 비정규직 중 하나라도 -7 이하인 경우 순위에서 제외됩니다.</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const govCount = 8;
+    const policies = [
+        "1. 최저시급 인상", "2. 자동화 AI 도입", "3. 증세",
+        "4. 복지 지출 확대", "5. 기준 금리 인상", 
+        "6. 노동규제 고용 유연화", "7. 경기 부양 정책"
+    ];
+    
+    const weights = [
+        [-1, -2, 1, 2, 1], [2, 1, -1, -2, 2], [-2, -1, -1, -2, 3],
+        [-1, 0, 1, 2, -2], [-1, -2, 0, -2, 3], [1, 2, -2, -1, -1], [2, 2, 1, 1, -3]
+    ];
+
+    let currentStep = 0; 
+
+    function init() {
+        const headerRow = document.getElementById('header-row');
+        const inputTbody = document.getElementById('input-tbody');
+
+        for(let i=0; i<govCount; i++) {
+            const th = document.createElement('th');
+            th.innerHTML = `<input type="text" class="team-name-input" value="팀 ${i+1}" id="team-name-${i}" oninput="updateResultSheet()">`;
+            headerRow.appendChild(th);
+        }
+
+        policies.forEach((p, pIdx) => {
+            const tr = document.createElement('tr');
+            tr.id = `row-p-${pIdx}`;
+            let html = `<td class="policy-cell">${p}</td>`;
+            for(let g=0; g<govCount; g++) {
+                html += `<td>
+                            <select id="p${pIdx}-g${g}" onchange="autoUpdate(${pIdx})">
+                                <option value="none" selected>-</option>
+                                <option value="-1">-1</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                            </select>
+                         </td>`;
+            }
+            tr.innerHTML = html;
+            inputTbody.appendChild(tr);
+        });
+    }
+
+    function autoUpdate(pIdx) {
+        if(pIdx >= currentStep) {
+            currentStep = pIdx + 1;
+            updateStepUI();
+        }
+        updateResultSheet();
+    }
+
+    function fillRandomData() {
+        if(!confirm("모든 팀의 정책 추진도를 랜덤으로 설정하시겠습니까?")) return;
+        const forceOptions = ["-1", "1", "2", "3"];
+        for(let p=0; p<policies.length; p++) {
+            for(let g=0; g<govCount; g++) {
+                const randomVal = forceOptions[Math.floor(Math.random() * forceOptions.length)];
+                document.getElementById(`p${p}-g${g}`).value = randomVal;
+            }
+        }
+        currentStep = 7; 
+        updateStepUI();
+        updateResultSheet();
+        alert("모든 데이터가 입력 및 반영되었습니다.");
+    }
+
+    function updateResultSheet() {
+        const resultTbody = document.getElementById('result-tbody');
+        resultTbody.innerHTML = ""; 
+        let participatingAny = false;
+        document.getElementById('ranking-area').style.display = 'none';
+
+        for (let g = 0; g < govCount; g++) {
+            let isParticipating = false;
+            let currentGovScores = [0, 0, 0, 0, 0];
+            for (let p = 0; p < policies.length; p++) {
+                const val = document.getElementById(`p${p}-g${g}`).value;
+                if (val !== "none") {
+                    isParticipating = true;
+                    const force = parseInt(val);
+                    for (let w = 0; w < 5; w++) {
+                        currentGovScores[w] += force * weights[p][w];
+                    }
+                }
+            }
+            if (isParticipating) {
+                participatingAny = true;
+                const teamName = document.getElementById(`team-name-${g}`).value;
+                const tr = document.createElement('tr');
+                let rowHtml = `<td style="font-weight:bold; background-color:#f8fbff;">${teamName}</td>`;
+                
+                currentGovScores.forEach((val, idx) => {
+                    const colorClass = val > 0 ? 'positive' : (val < 0 ? 'negative' : '');
+                    const sign = val > 0 ? '+' : '';
+                    rowHtml += `<td class="score-val ${colorClass}" data-type="${idx}" data-val="${val}">${sign}${val}</td>`;
+                });
+                tr.innerHTML = rowHtml;
+                resultTbody.appendChild(tr);
+            }
+        }
+        if (!participatingAny) {
+            resultTbody.innerHTML = `<tr><td colspan="6" class="empty-msg">추진력을 선택하면 실시간 결과가 나타납니다.</td></tr>`;
+        }
+    }
+
+    function calculateRanking() {
+        const survivors = []; 
+        const eliminated = []; 
+        let participatingAny = false;
+
+        updateResultSheet();
+
+        for (let g = 0; g < govCount; g++) {
+            let isParticipating = false;
+            let scores = [0, 0, 0, 0, 0]; 
+            for (let p = 0; p < policies.length; p++) {
+                const val = document.getElementById(`p${p}-g${g}`).value;
+                if (val !== "none") {
+                    isParticipating = true;
+                    const force = parseInt(val);
+                    for (let w = 0; w < 5; w++) {
+                        scores[w] += force * weights[p][w];
+                    }
+                }
+            }
+            if (isParticipating) {
+                participatingAny = true;
+                const teamName = document.getElementById(`team-name-${g}`).value;
+                let isEliminated = false;
+                let failReason = [];
+                const categories = ["대기업", "소상공인", "정규직", "비정규직"];
+                
+                for(let i=0; i<4; i++) {
+                    if(scores[i] <= -7) { 
+                        isEliminated = true;
+                        failReason.push(`${categories[i]}(${scores[i]})`);
+                    }
+                }
+                if (isEliminated) {
+                    eliminated.push({ name: teamName, reasons: failReason.join(", ") });
+                } else {
+                    survivors.push({ name: teamName, finance: scores[4] });
+                }
+            }
+        }
+
+        if(!participatingAny) {
+            alert("참여한 팀이 없어 순위를 산출할 수 없습니다.");
+            return;
+        }
+
+        const resultRows = document.querySelectorAll("#result-tbody tr");
+        resultRows.forEach(row => {
+            const cells = row.querySelectorAll(".score-val");
+            cells.forEach(cell => {
+                const val = parseInt(cell.getAttribute("data-val"));
+                const type = parseInt(cell.getAttribute("data-type"));
+                if (type < 4 && val <= -7) {
+                    cell.classList.add("danger-cell");
+                } else {
+                    cell.classList.remove("danger-cell");
+                }
+            });
+        });
+
+        survivors.sort((a, b) => b.finance - a.finance);
+        const rankingArea = document.getElementById('ranking-area');
+        const listContainer = document.getElementById('ranking-list-container');
+        const elimContainer = document.getElementById('eliminated-container');
+        const elimList = document.getElementById('eliminated-list');
+        rankingArea.style.display = 'block';
+        listContainer.innerHTML = '';
+        elimList.innerHTML = '';
+        
+        if(survivors.length > 0) {
+            let html = '<ul class="rank-list">';
+            survivors.forEach((team, index) => {
+                let badge = index === 0 ? "🥇 1위" : (index === 1 ? "🥈 2위" : (index === 2 ? "🥉 3위" : `${index + 1}위`));
+                let bgStyle = index === 0 ? "background-color: #fffde7; border: 2px solid #f1c40f;" : "";
+                html += `<li class="rank-item" style="${bgStyle}">
+                            <div><span class="rank-badge">${badge}</span> ${team.name}</div>
+                            <div class="rank-finance">정부재정: ${team.finance}점</div>
+                         </li>`;
+            });
+            html += '</ul>';
+            listContainer.innerHTML = html;
+        } else {
+            listContainer.innerHTML = '<div style="text-align:center; padding:20px; color:#e74c3c; font-weight:bold; font-size:1.3em;">모든 팀이 탈락 기준(-7점 이하)에 해당하여 순위자가 없습니다.</div>';
+        }
+
+        if(eliminated.length > 0) {
+            elimContainer.style.display = 'block';
+            eliminated.forEach(team => {
+                const div = document.createElement('div');
+                div.className = 'eliminated-item';
+                div.innerText = `- ${team.name}: 재집권 실패 (원인: ${team.reasons})`;
+                elimList.appendChild(div);
+            });
+        } else {
+            elimContainer.style.display = 'none';
+        }
+        rankingArea.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function processNextStep() {
+        if (currentStep >= 7) return;
+        currentStep++;
+        updateStepUI();
+    }
+
+    function processPrevStep() {
+        if (currentStep <= 0) return;
+        currentStep--;
+        updateStepUI();
+    }
+
+    function updateStepUI() {
+        const btnNext = document.getElementById('btn-next');
+        const btnPrev = document.getElementById('btn-prev');
+        const status = document.getElementById('status-display');
+        for(let i=0; i<7; i++) document.getElementById(`row-p-${i}`).classList.remove('active-policy');
+        
+        if (currentStep > 0) {
+            document.getElementById(`row-p-${currentStep-1}`).classList.add('active-policy');
+            status.innerText = `현재 진행 중: [${policies[currentStep-1]}] 단계`;
+            btnPrev.style.display = "inline-block";
+        } else {
+            status.innerText = "준비 단계 : 팀명을 입력하고 추진도를 설정해주세요.";
+            btnPrev.style.display = "none";
+        }
+        
+        if(currentStep < 7) {
+            btnNext.innerText = "▶ 다음 정책으로";
+            btnNext.style.backgroundColor = "#2980b9";
+            btnNext.disabled = false;
+        } else {
+            btnNext.innerText = "모든 정책 시행 완료";
+            btnNext.style.backgroundColor = "#27ae60";
+            btnNext.disabled = true;
+        }
+    }
+
+    function resetEverything() {
+        if(confirm("모든 데이터를 삭제하고 처음으로 돌아갈까요?")) {
+            location.reload();
+        }
+    }
+
+    init();
+</script>
+</body>
+</html>
